@@ -4,14 +4,18 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15        # 或 macos-latest / macos-16，自带更新的 Xcode
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Build Compositor
+      - uses: actions/checkout@v4   # 注意可顺便升到 v5 消除 Node 20 警告
+      # 显式选择兼容新版工程格式的 Xcode
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'     # 或与写入格式77一致的版本
+      - name: Build
         run: |
-          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+          xcodebuild -project Compositor.xcodeproj -scheme Compositor \
+            -configuration Release CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
       - name: Zip App
         run: |
